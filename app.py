@@ -19,10 +19,6 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///moviematch.db")
 
-# Make sure API key is set
-if not os.environ.get("API_KEY"):
-    raise RuntimeError("API_KEY not set")
-
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -38,7 +34,7 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Log user in"""
+    """Log user in."""
 
     # Forget any user_id
     session.clear()
@@ -55,7 +51,8 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        rows = db.execute("SELECT * FROM users WHERE username = :username",
+                          username=request.form.get("username"))
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
@@ -83,41 +80,34 @@ def logout():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register user"""
+    """Register user for an account."""
+
+    # POST
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        confirmation = request.form.get("confirmation")
 
-        # Ensure username was submitted
-        if not username:
-            return apology("must provide username", 400)
+        # Validate form submission
+        if not request.form.get("username"):
+            return apology("missing username")
+        elif not request.form.get("password"):
+            return apology("missing password")
+        elif request.form.get("password") != request.form.get("confirmation"):
+            return apology("passwords don't match")
 
-        # Ensure password was submitted
-        elif not password:
-            return apology("must provide password", 400)
+        # Add user to database
+        try:
+            id = db.execute("INSERT INTO users (username, hash) VALUES(?, ?)",
+                            request.form.get("username"),
+                            generate_password_hash(request.form.get("password")))
+        except ValueError:
+            return apology("username taken")
 
-        # Ensure confirmation was submitted
-        elif not confirmation:
-            return apology("must confirm password", 400)
+        # Log user in
+        session["user_id"] = id
 
-        # Ensure password and confirmation match
-        if confirmation == password:
-            password = confirmation
-        else:
-            return apology("passwords do not match", 400)
+        # Let user know they're registered
+        flash("Registered!")
+        return redirect("/")
 
-        # Hash password
-        hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
-
-        # Check if username already exists
-        users_with_username = db.execute("SELECT username FROM users WHERE username = ?", username)
-        if len(users_with_username) == 0:
-            db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, hash)
-            return redirect("/")
-        else:
-            return apology("Username already exists.", 400)
-
-    # User reached route via GET (as by clicking a link or via redirect)
+    # GET
     else:
         return render_template("register.html")
