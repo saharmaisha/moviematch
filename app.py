@@ -111,3 +111,37 @@ def register():
     # GET
     else:
         return render_template("register.html")
+
+@app.route("/form", methods=["GET", "POST"])
+@login_required
+def form():
+    directors = db.execute("SELECT DISTINCT(Director) FROM movies")
+    actors = db.execute("SELECT DISTINCT(Star1) FROM movies")
+    years = db.execute("SELECT DISTINCT(Release_Year) FROM movies ORDER BY Release_Year")
+    if request.method == "POST":
+        # Validate form submission
+        genre = request.form.get("genre")
+        director = request.form.get("director")
+        actor = request.form.get("actor")
+        minyear = request.form.get("minyear")
+        maxyear = request.form.get("maxyear")
+        rating = request.form.get("rating")
+        if not genre:
+            return apology("missing genre")
+        elif not director:
+            return apology("missing director")
+        elif not actor:
+            return apology("missing actor")
+        elif not minyear:
+            return apology("missing minimum year of release")
+        elif not maxyear:
+            return apology("missing maximum year of release")
+        elif not rating:
+            return apology("missing rating")
+        db.execute("INSERT INTO form (rating, director, genre, actor, minyear, maxyear) VALUES (?, ?, ?, ?, ?, ?)", rating, director, genre, actor, minyear, maxyear)
+    else:
+        return render_template("form.html", directors = directors, actors = actors, years = years)
+
+@app.route("/results")
+def results():
+    results = db.execute("SELECT ")
