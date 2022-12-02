@@ -5,3 +5,61 @@
 {% endblock %}
 
 {% block main %}
+<!--genre, director, actor, minyear, maxyear, rating-->
+    <form action="/form" method="post">
+        <h1>Moviematch Form</h1>
+        <div class="form-group">
+            <label>Favorite Genres</label>
+            <select class="form-control mx-auto w-auto" id="genre">
+              <option>Adventure</option>
+              <option>Action</option>
+              <option>Animation</option>
+              <option>Biography</option>
+              <option>Comedy</option>
+              <option>Crime</option>
+              <option>Drama</option>
+              <option>Family</option>
+              <option>Fantasy</option>
+              <option>Film-Noir</option>
+              <option>Horror</option>
+              <option>Musical</option>
+              <option>Romance</option>
+              <option>Sport</option>
+              <option>Sci-Fi</option>
+              <option>Thriller</option>
+              <option>War</option>
+              <option>Western</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select class="form-select mx-auto w-auto" name="director">
+                <option disabled selected>Favorite Director</option>
+                {% for d in director %}
+                    <option value="{{ d }}">{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <select class="form-select mx-auto w-auto" name="actor">
+                <option disabled selected>Favorite Actor</option>
+                {% for a in actor %}
+                    <option value="{{ a }}">{{ a }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="slidecontainer">
+            <label>Minimum Year:</label>
+            <input type="range" min="1920" max="2020" value="2000" class="slider" id="minYear">
+        </div>
+        <div class="slidecontainer">
+            <label>Maximum Year:</label>
+            <input type="range" min="1920" max="2020" value="2000" class="slider" id="maxYear">
+        </div>
+        <div class="slidecontainer">
+            <label>Rating:</label>
+            <input type="range" min= "7.6" max="9.3" step="0.1" value="5.0" class="slider" id="rating">
+        </div>
+        <button href = "template/results.html " type="submit" class="btn btn-outline-success">Submit</button>
+    </form>
+
+{% endblock %}
