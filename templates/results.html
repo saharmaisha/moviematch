@@ -5,3 +5,26 @@
 {% endblock %}
 
 {% block main %}
+<center><h1> Results </h1></center>
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-start">Symbol</th>
+            <th class="text-end">Shares</th>
+            <th class="text-end">Price</th>
+            <th class="text-end">Transacted</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stock in history %}
+            <tr>
+                <td>{{ stock.name }}</td>
+                <td>{{ stock.share }}</td>
+                <td>${{ stock.price }}</td>
+                <td>{{ stock.type }}</td>
+                <td>{{ stock.transaction_time }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
