@@ -8,9 +8,9 @@
 <!--genre, director, actor, minyear, maxyear, rating-->
     <form action="/form" method="post">
         <h1>Moviematch Form</h1>
-        <div class="form-group">
-            <label>Favorite Genres</label>
-            <select class="form-control mx-auto w-auto" id="genre">
+        <div class="mb-3">
+            <select class="form-select mx-auto w-auto" name="genre">
+              <option disabled selected>Favorite Genre</option>
               <option>Adventure</option>
               <option>Action</option>
               <option>Animation</option>
@@ -34,32 +34,58 @@
         <div class="mb-3">
             <select class="form-select mx-auto w-auto" name="director">
                 <option disabled selected>Favorite Director</option>
-                {% for d in director %}
-                    <option value="{{ d }}">{{ d }}</option>
+                {% for d in directors %}
+                    <option>{{ d.Director }}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="mb-3">
             <select class="form-select mx-auto w-auto" name="actor">
                 <option disabled selected>Favorite Actor</option>
-                {% for a in actor %}
-                    <option value="{{ a }}">{{ a }}</option>
+                {% for a in actors %}
+                    <option>{{ a.Star1 }}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="slidecontainer">
             <label>Minimum Year:</label>
-            <input type="range" min="1920" max="2020" value="2000" class="slider" id="minYear">
+            <input type="range" min="1920" max="2020" value="2000" class="slider" id="myRange" name="minyear">
+            <p>Value: <span id="demo"></span></p>
         </div>
         <div class="slidecontainer">
             <label>Maximum Year:</label>
-            <input type="range" min="1920" max="2020" value="2000" class="slider" id="maxYear">
+            <input type="range" min="1920" max="2020" value="2000" class="slider" id="myRange1" name="maxyear">
+            <p>Value: <span id="demo1"></span></p>
         </div>
         <div class="slidecontainer">
             <label>Rating:</label>
-            <input type="range" min= "7.6" max="9.3" step="0.1" value="5.0" class="slider" id="rating">
+            <input type="range" min= "7.6" max="9.3" step="0.1" value="5.0" class="slider" id="myRange2" name="rating">
+            <p>Value: <span id="demo2"></span></p>
         </div>
         <button href = "template/results.html " type="submit" class="btn btn-outline-success">Submit</button>
     </form>
+    <script>
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("demo");
+        output.innerHTML = slider.value;
+        
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+        }
+        var slider1 = document.getElementById("myRange1");
+        var output1 = document.getElementById("demo1");
+        output1.innerHTML = slider1.value;
+        
+        slider1.oninput = function() {
+            output1.innerHTML = this.value;
+        }
+        var slider2 = document.getElementById("myRange2");
+        var output2 = document.getElementById("demo2");
+        output2.innerHTML = slider2.value;
+        
+        slider2.oninput = function() {
+            output2.innerHTML = this.value;
+        }
+    </script>
 
 {% endblock %}
