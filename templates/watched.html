@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Results
+    Watched Movies
 {% endblock %}
 
 {% block main %}
-<h1> Results </h1>
-<form method="post" action="/results">
+<h1> Watched Movies </h1>
 <table class="table">
     <thead>
         <tr>
@@ -16,7 +15,6 @@
             <th class="text-center">Genre</th>
             <th class="text-center">Rating</th>
             <th class="text-center">Release Year</th>
-            <th class="text-center">Already Watched?</th>
         </tr>
     </thead>
     <tbody>
@@ -28,17 +26,8 @@
                 <td>{{ result.genre }}</td>
                 <td>{{ result.rating }}</td>
                 <td>{{ result.released_year }}</td>
-                <td>
-                    <div class="radio">
-                        <label><input type="radio" id='{{ result.id }}' name="yes">Yes</label>
-                    </div>
-                    <div class="radio">
-                        <label><input type="radio" id='{{ result.id }}' name="no">No</label>
-                    </div>
-                </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-</form>
 {% endblock %}
