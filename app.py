@@ -124,27 +124,47 @@ def form():
         actor = request.form.get("actor")
         minyear = request.form.get("minyear")
         maxyear = request.form.get("maxyear")
-        rating = request.form.get("rating")
+        minrating = request.form.get("minrating")
+        maxrating = request.form.get("maxrating")
+        if genre is None and director is None and actor is None and maxyear == "1919" and minrating == "7.5" and maxrating == "7.5":
+            return apology("change at least one field to product results")
         if not genre:
-            return apology("missing genre")
-        elif not director:
-            return apology("missing director")
-        elif not actor:
-            return apology("missing actor")
-        elif not minyear:
-            return apology("missing minimum year of release")
-        elif not maxyear:
-            return apology("missing maximum year of release")
-        elif not rating:
-            return apology("missing rating")
-        print("****TESTING*****",genre, director, actor, minyear, maxyear, rating)
-        db.execute("INSERT INTO form (rating, director, genre, actor, minyear, maxyear) VALUES (:rating, :director, :genre, :actor, :minyear, :maxyear)", rating=rating, director=director, genre=genre, actor=actor, minyear=minyear, maxyear=maxyear)
-        rows = db.execute("SELECT * FROM form")
-        print(rows)
-        return render_template("results.html")
+            genre = None
+        if not director:
+            director = None
+        if not actor:
+            actor = None
+        if minyear == "1919":
+            minyear = "1920"
+        if maxyear == "1919":
+            maxyear = "2020"
+        if minrating == "7.5":
+            minrating = "7.6"
+        if maxrating == "7.5":
+            maxrating = "9.3"
+        db.execute("INSERT INTO form (minrating, maxrating, director, genre, actor, minyear, maxyear, user_id) VALUES (:minrating, :maxrating, :director, :genre, :actor, :minyear, :maxyear, :user_id)", minrating=minrating, maxrating=maxrating, director=director, genre=genre, actor=actor, minyear=minyear, maxyear=maxyear, user_id=session["user_id"])
+        return redirect("/results")
     else:
         return render_template("form.html", directors = directors, actors = actors)
 
-#@app.route("/results")
-#def results():
-    #results = db.execute("SELECT ")
+@app.route("/results", methods=["GET", "POST"])
+@login_required
+def results():
+    if request.method == "GET":
+        submission = db.execute("SELECT * FROM form WHERE user_id = ? ORDER BY id DESC", session["user_id"])
+        if submission[0]['genre'] is not None:
+            sub_genre = "%"+submission[0]['genre']+"%"
+        else:
+            sub_genre = submission[0]['genre']
+        mov_results = db.execute("SELECT Series_Title, Runtime, Genre, IMDB_Rating, Released_Year, Director FROM movies WHERE (IMDB_Rating >= ? OR ? IS NULL) AND (IMDB_Rating <= ? OR ? IS NULL) AND (Director LIKE ? OR ? IS NULL) AND (Genre LIKE ? OR ? IS NULL) AND (Star1 LIKE ? OR Star2 LIKE ? OR Star3 LIKE ? OR Star4 LIKE ? OR ? IS NULL) AND (Released_Year >= ? OR ? IS NULL) AND (Released_Year <= ? OR ? IS NULL)", submission[0]['minrating'], submission[0]['minrating'], submission[0]['maxrating'], submission[0]['maxrating'], submission[0]['director'], submission[0]['director'], sub_genre, sub_genre, submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['minyear'], submission[0]['minyear'], submission[0]['maxyear'], submission[0]['maxyear'])
+        for i in range(0, len(mov_results)):
+            db.execute("INSERT INTO results (movie_name, runtime, genre, rating, released_year, user_id, director) VALUES (?, ?, ?, ?, ?, ?, ?)", mov_results[i]['Series_Title'], mov_results[i]['Runtime'], mov_results[i]['Genre'], mov_results[i]['IMDB_Rating'], mov_results[i]['Released_Year'], session["user_id"], mov_results[i]['Director'])
+        results = db.execute("SELECT * FROM results")
+        return render_template("results.html", results=results)
+    #else - start here  
+
+""" @app.route("/watched")
+@login_required
+def watched():
+
+    return render_template("watched.html") """
