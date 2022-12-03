@@ -161,7 +161,7 @@ def results():
             db.execute("INSERT INTO results (movie_name, runtime, genre, rating, released_year, user_id, director) VALUES (?, ?, ?, ?, ?, ?, ?)", mov_results[i]['Series_Title'], mov_results[i]['Runtime'], mov_results[i]['Genre'], mov_results[i]['IMDB_Rating'], mov_results[i]['Released_Year'], session["user_id"], mov_results[i]['Director'])
         results = db.execute("SELECT * FROM results")
         return render_template("results.html", results=results)
-    #else - start here 
+    #else - start here  
 
 """ @app.route("/watched")
 @login_required
