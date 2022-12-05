@@ -29,16 +29,14 @@
                 <td>{{ result.rating }}</td>
                 <td>{{ result.released_year }}</td>
                 <td>
-                    <div class="radio">
-                        <label><input type="radio" id='{{ result.id }}' name="yes">Yes</label>
-                    </div>
-                    <div class="radio">
-                        <label><input type="radio" id='{{ result.id }}' name="no">No</label>
+                    <div>
+                        <label><input type="checkbox" name="yes{{result.id}}"> Yes</label>
                     </div>
                 </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+<a href="/watched"><button type="submit" class="btn btn-outline-success">Submit</button></a>
 </form>
 {% endblock %}
