@@ -5,8 +5,7 @@
 {% endblock %}
 
 {% block main %}
-<h1> Watched Movies </h1>
-<!--<form method="post" action="/unwatched">-->
+<h1> Unwatched Movies </h1>
 <table class="table">
     <thead>
         <tr>
@@ -19,17 +18,16 @@
         </tr>
     </thead> 
     <tbody>
-        {% for watch in watched %}
+        {% for unwatch in unwatched %}
             <tr>
-                <td>{{ watch.movie_name }}</td>
-                <td>{{ watch.director }}</td>
-                <td>{{ watch.runtime }}</td>
-                <td>{{ watch.genre }}</td>
-                <td>{{ watch.rating }}</td>
-                <td>{{ watch.released_year }}</td>
+                <td>{{ unwatch.movie_name }}</td>
+                <td>{{ unwatch.director }}</td>
+                <td>{{ unwatch.runtime }}</td>
+                <td>{{ unwatch.genre }}</td>
+                <td>{{ unwatch.rating }}</td>
+                <td>{{ unwatch.released_year }}</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-<!--</form>-->
 {% endblock %}

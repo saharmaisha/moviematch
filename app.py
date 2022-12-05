@@ -156,15 +156,43 @@ def results():
             sub_genre = "%"+submission[0]['genre']+"%"
         else:
             sub_genre = submission[0]['genre']
-        mov_results = db.execute("SELECT Series_Title, Runtime, Genre, IMDB_Rating, Released_Year, Director FROM movies WHERE (IMDB_Rating >= ? OR ? IS NULL) AND (IMDB_Rating <= ? OR ? IS NULL) AND (Director LIKE ? OR ? IS NULL) AND (Genre LIKE ? OR ? IS NULL) AND (Star1 LIKE ? OR Star2 LIKE ? OR Star3 LIKE ? OR Star4 LIKE ? OR ? IS NULL) AND (Released_Year >= ? OR ? IS NULL) AND (Released_Year <= ? OR ? IS NULL)", submission[0]['minrating'], submission[0]['minrating'], submission[0]['maxrating'], submission[0]['maxrating'], submission[0]['director'], submission[0]['director'], sub_genre, sub_genre, submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['minyear'], submission[0]['minyear'], submission[0]['maxyear'], submission[0]['maxyear'])
+        mov_results = db.execute("SELECT Series_Title, Runtime, Genre, IMDB_Rating, Released_Year, Director FROM movies WHERE (IMDB_Rating >= ? OR ? IS NULL) AND (IMDB_Rating <= ? OR ? IS NULL) AND (Director LIKE ? OR ? IS NULL) AND (Genre LIKE ? OR ? IS NULL) AND (Star1 LIKE ? OR Star2 LIKE ? OR Star3 LIKE ? OR Star4 LIKE ? OR ? IS NULL) AND (Released_Year >= ? OR ? IS NULL) AND (Released_Year <= ? OR ? IS NULL) LIMIT 15", submission[0]['minrating'], submission[0]['minrating'], submission[0]['maxrating'], submission[0]['maxrating'], submission[0]['director'], submission[0]['director'], sub_genre, sub_genre, submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['actor'], submission[0]['minyear'], submission[0]['minyear'], submission[0]['maxyear'], submission[0]['maxyear'])
+        db.execute("DELETE FROM results WHERE user_id = ?", session["user_id"])
         for i in range(0, len(mov_results)):
             db.execute("INSERT INTO results (movie_name, runtime, genre, rating, released_year, user_id, director) VALUES (?, ?, ?, ?, ?, ?, ?)", mov_results[i]['Series_Title'], mov_results[i]['Runtime'], mov_results[i]['Genre'], mov_results[i]['IMDB_Rating'], mov_results[i]['Released_Year'], session["user_id"], mov_results[i]['Director'])
-        results = db.execute("SELECT * FROM results")
+            watched = db.execute("SELECT * FROM watched WHERE user_id = ?", session["user_id"])
+            if (len(db.execute("SELECT * FROM watched WHERE movie_name = ? AND user_id = ?", mov_results[i]['Series_Title'], session["user_id"])) == 1):
+                db.execute("DELETE FROM results WHERE movie_name = ? AND user_id = ?", mov_results[i]['Series_Title'], session["user_id"])
+        results = db.execute("SELECT * FROM results WHERE user_id = ?", session["user_id"])
         return render_template("results.html", results=results)
-    #else - start here  
+    else:
+        results = db.execute("SELECT * FROM results WHERE user_id = ?", session["user_id"])
+        for i in range(0, len(results)):
+            yes_var = str(results[i]['id'])
+            if request.form.get("yes"+yes_var) == "on":
+                if (len(db.execute("SELECT * FROM watched WHERE movie_name = ? AND user_id = ?", results[i]['movie_name'], session["user_id"])) == 1):
+                    db.execute("DELETE FROM watched WHERE movie_name = ? AND user_id = ?", results[i]['movie_name'], session["user_id"])
+                db.execute("INSERT INTO watched(movie_name, runtime, genre, rating, released_year, user_id, director) VALUES (?, ?, ?, ?, ?, ?, ?)", results[i]['movie_name'], results[i]['runtime'], results[i]['genre'], results[i]['rating'], results[i]['released_year'], session["user_id"], results[i]['director'])
+            else:
+                if (len(db.execute("SELECT * FROM to_watch WHERE movie_name = ? AND user_id = ?", results[i]['movie_name'], session["user_id"])) == 1):
+                    db.execute("DELETE FROM to_watch WHERE movie_name = ? AND user_id = ?", results[i]['movie_name'], session["user_id"])
+                db.execute("INSERT INTO to_watch(movie_name, runtime, genre, rating, released_year, user_id, director) VALUES (?, ?, ?, ?, ?, ?, ?)", results[i]['movie_name'], results[i]['runtime'], results[i]['genre'], results[i]['rating'], results[i]['released_year'], session["user_id"], results[i]['director'])
+        unwatched = db.execute("SELECT * FROM to_watch")
+        for i in range(len(unwatched)):
+            if (len(db.execute("SELECT * FROM watched WHERE movie_name = ? AND user_id = ?", unwatched[i]['movie_name'], session["user_id"])) == 1):
+                db.execute("DELETE FROM to_watch WHERE movie_name = ? AND user_id = ?", unwatched[i]['movie_name'], session["user_id"])
+        db.execute("DELETE FROM results WHERE user_id = ?", session["user_id"])
+        watched = db.execute("SELECT * FROM watched WHERE user_id = ?", session["user_id"])
+        return render_template("watched.html", watched=watched)
 
-""" @app.route("/watched")
+@app.route("/watched")
 @login_required
 def watched():
+    watched = db.execute("SELECT * FROM watched")
+    return render_template("watched.html", watched=watched)
 
-    return render_template("watched.html") """
+@app.route("/unwatched")
+@login_required
+def unwatched():
+    unwatched = db.execute("SELECT * FROM to_watch")
+    return render_template("unwatched.html", unwatched=unwatched)
