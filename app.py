@@ -8,6 +8,8 @@ from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 
+from urllib.parse import urlparse, parse_qs
+
 # Configure application
 app = Flask(__name__)
 
@@ -127,7 +129,7 @@ def form():
         minrating = request.form.get("minrating")
         maxrating = request.form.get("maxrating")
         if genre is None and director is None and actor is None and maxyear == "1919" and minrating == "7.5" and maxrating == "7.5":
-            return apology("change at least one field to product results")
+            return apology("change at least one field to produce results")
         if not genre:
             genre = None
         if not director:
@@ -188,11 +190,17 @@ def results():
 @app.route("/watched")
 @login_required
 def watched():
-    watched = db.execute("SELECT * FROM watched")
+    watched = db.execute("SELECT * FROM watched WHERE user_id = ?", session["user_id"])
     return render_template("watched.html", watched=watched)
 
 @app.route("/unwatched")
 @login_required
 def unwatched():
-    unwatched = db.execute("SELECT * FROM to_watch")
+    unwatched = db.execute("SELECT * FROM to_watch WHERE user_id = ?", session["user_id"])
     return render_template("unwatched.html", unwatched=unwatched)
+
+@app.route("/about")
+@login_required
+def about():
+    info = db.execute("SELECT * FROM movies WHERE Series_Title = ?", request.args.get('movie'))
+    return render_template("about.html", info=info)

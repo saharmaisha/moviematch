@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    About
+{% endblock %}
+
+{% block main %}
+{% for i in info %}
+<h1> About {{ i.Series_Title }}</h1>
+<br>
+<p> {{ i.Overview }}</p>
+<br>
+<h3> Starring...</h3>
+    <p>{{ i.Star1 }}, {{ i.Star2 }}, {{ i.Star3 }}, {{ i.Star4 }}</p>
+{% endfor %}
+
+{% endblock %}
