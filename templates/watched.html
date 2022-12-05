@@ -6,7 +6,7 @@
 
 {% block main %}
 <h1> Watched Movies </h1>
-<!--<form method="post" action="/unwatched">-->
+<form method="post" action="/about">
 <table class="table">
     <thead>
         <tr>
@@ -21,7 +21,8 @@
     <tbody>
         {% for watch in watched %}
             <tr>
-                <td>{{ watch.movie_name }}</td>
+                {% set movie_name = watch.movie_name %}
+                <td><a href="/about?movie={{ watch.movie_name }}" name="{{ movie_name }}">{{ watch.movie_name }}</a></td>
                 <td>{{ watch.director }}</td>
                 <td>{{ watch.runtime }}</td>
                 <td>{{ watch.genre }}</td>
@@ -31,5 +32,5 @@
         {% endfor %}
     </tbody>
 </table>
-<!--</form>-->
+</form>
 {% endblock %}

@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Watched Movies
+    Unwatched Movies
 {% endblock %}
 
 {% block main %}
 <h1> Unwatched Movies </h1>
+<form method="post" action="/about">
 <table class="table">
     <thead>
         <tr>
@@ -20,7 +21,8 @@
     <tbody>
         {% for unwatch in unwatched %}
             <tr>
-                <td>{{ unwatch.movie_name }}</td>
+                {% set movie_name = unwatch.movie_name %}
+                <td><a href="/about?movie={{ unwatch.movie_name }}" name="{{ movie_name }}">{{ unwatch.movie_name }}</a></td>
                 <td>{{ unwatch.director }}</td>
                 <td>{{ unwatch.runtime }}</td>
                 <td>{{ unwatch.genre }}</td>
@@ -30,4 +32,5 @@
         {% endfor %}
     </tbody>
 </table>
+</form>
 {% endblock %}
