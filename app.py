@@ -8,8 +8,6 @@ from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
 
-from urllib.parse import urlparse, parse_qs
-
 # Configure application
 app = Flask(__name__)
 
@@ -179,7 +177,7 @@ def results():
                 if (len(db.execute("SELECT * FROM to_watch WHERE movie_name = ? AND user_id = ?", results[i]['movie_name'], session["user_id"])) == 1):
                     db.execute("DELETE FROM to_watch WHERE movie_name = ? AND user_id = ?", results[i]['movie_name'], session["user_id"])
                 db.execute("INSERT INTO to_watch(movie_name, runtime, genre, rating, released_year, user_id, director) VALUES (?, ?, ?, ?, ?, ?, ?)", results[i]['movie_name'], results[i]['runtime'], results[i]['genre'], results[i]['rating'], results[i]['released_year'], session["user_id"], results[i]['director'])
-        unwatched = db.execute("SELECT * FROM to_watch")
+        unwatched = db.execute("SELECT * FROM to_watch WHERE user_id = ?", session["user_id"])
         for i in range(len(unwatched)):
             if (len(db.execute("SELECT * FROM watched WHERE movie_name = ? AND user_id = ?", unwatched[i]['movie_name'], session["user_id"])) == 1):
                 db.execute("DELETE FROM to_watch WHERE movie_name = ? AND user_id = ?", unwatched[i]['movie_name'], session["user_id"])
@@ -199,8 +197,21 @@ def unwatched():
     unwatched = db.execute("SELECT * FROM to_watch WHERE user_id = ?", session["user_id"])
     return render_template("unwatched.html", unwatched=unwatched)
 
-@app.route("/about")
+@app.route("/about", methods=["GET", "POST"])
 @login_required
 def about():
-    info = db.execute("SELECT * FROM movies WHERE Series_Title = ?", request.args.get('movie'))
-    return render_template("about.html", info=info)
+    if request.method == "GET":
+        info = db.execute("SELECT * FROM movies WHERE Series_Title = ?", request.args.get('movie'))
+        return render_template("about.html", info=info)
+    else:
+        unwatched = db.execute("SELECT * FROM to_watch WHERE user_id = ?", session["user_id"])
+        for i in range(0, len(unwatched)):
+            yes_var = str(unwatched[i]['id'])
+            if request.form.get("yes"+yes_var) == "on":
+                if (len(db.execute("SELECT * FROM watched WHERE movie_name = ? AND user_id = ?", unwatched[i]['movie_name'], session["user_id"])) == 1):
+                    db.execute("DELETE FROM to_watch WHERE movie_name = ? AND user_id = ?", unwatched[i]['movie_name'], session["user_id"])
+                db.execute("INSERT INTO watched(movie_name, runtime, genre, rating, released_year, user_id, director) VALUES (?, ?, ?, ?, ?, ?, ?)", unwatched[i]['movie_name'], unwatched[i]['runtime'], unwatched[i]['genre'], unwatched[i]['rating'], unwatched[i]['released_year'], session["user_id"], unwatched[i]['director'])
+                db.execute("DELETE FROM to_watch WHERE movie_name = ? AND user_id = ?", unwatched[i]['movie_name'], session["user_id"])
+        db.execute("DELETE FROM results WHERE user_id = ?", session["user_id"])
+        watched = db.execute("SELECT * FROM watched WHERE user_id = ?", session["user_id"])
+        return render_template("watched.html", watched=watched)
