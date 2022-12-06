@@ -22,7 +22,8 @@
     <tbody>
         {% for result in results %}
             <tr>
-                <td>{{ result.movie_name }}</td>
+                {% set movie_name = result.movie_name %}
+                <td><a href="/about?movie={{ result.movie_name }}" name="{{ movie_name }}">{{ result.movie_name }}</a></td>
                 <td>{{ result.director }}</td>
                 <td>{{ result.runtime }}</td>
                 <td>{{ result.genre }}</td>
