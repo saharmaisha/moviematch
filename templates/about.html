@@ -8,10 +8,12 @@
 {% for i in info %}
 <h1> About {{ i.Series_Title }}</h1>
 <br>
-<p> {{ i.Overview }}</p>
+<p style="font-size: 30px"> {{ i.Overview }}</p>
 <br>
 <h3> Starring...</h3>
-    <p>{{ i.Star1 }}, {{ i.Star2 }}, {{ i.Star3 }}, {{ i.Star4 }}</p>
+<p>{{ i.Star1 }}, {{ i.Star2 }}, {{ i.Star3 }}, {{ i.Star4 }}</p>
+<br>
+<img src = "{{ i.Poster_Link }}" width="250px">
 {% endfor %}
 
 {% endblock %}

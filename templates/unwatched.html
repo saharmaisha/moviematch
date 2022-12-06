@@ -16,6 +16,7 @@
             <th class="text-center">Genre</th>
             <th class="text-center">Rating</th>
             <th class="text-center">Release Year</th>
+            <th class="text-center">Already Watched?</th>
         </tr>
     </thead> 
     <tbody>
@@ -28,9 +29,15 @@
                 <td>{{ unwatch.genre }}</td>
                 <td>{{ unwatch.rating }}</td>
                 <td>{{ unwatch.released_year }}</td>
+                <td>
+                    <div>
+                        <label><input type="checkbox" name="yes{{unwatch.id}}"> Yes</label>
+                    </div>
+                </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+<a href="/about"><button type="submit" class="btn btn-secondary">Submit</button></a>
 </form>
 {% endblock %}
