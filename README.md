@@ -9,7 +9,7 @@ Download the latest version of [Visual Studio Code](https://code.visualstudio.co
 
 In the terminal of Visual Studio Code (VSCode), clone the Github repository by inputting this into your preferred directory:
 
-    $ git clone https://github.com/saharmaisha/moviematch.git
+    git clone https://github.com/saharmaisha/moviematch.git
 
 It may prompt you to allow Github to access VSCode, to which you will provide your password for access. 
 
