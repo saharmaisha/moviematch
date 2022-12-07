@@ -103,8 +103,6 @@ def register():
         # Log user in
         session["user_id"] = id
 
-        # Let user know they're registered
-        flash("Registered!")
         return redirect("/")
 
     # GET

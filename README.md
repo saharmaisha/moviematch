@@ -1,5 +1,9 @@
 # Welcome to 🎬 MovieMatch!
 
+## Video Demonstration
+
+https://youtu.be/Bs7M1c6fu_s
+
 ## Getting Started
 Download the latest version of [Visual Studio Code](https://code.visualstudio.com/download).
 
